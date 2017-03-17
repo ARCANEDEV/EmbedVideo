@@ -41,10 +41,6 @@ class EmbedVideoServiceProvider extends PackageServiceProvider
 
         $this->registerConfig();
 
-        $this->singleton(Contracts\Embed::class, function () {
-            return 'hello';
-        });
-
         $this->singleton(Contracts\ParserManager::class, function ($app) {
             return new ParserManager($app);
         });

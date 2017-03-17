@@ -22,7 +22,7 @@ class ParserManager extends Manager implements ParserManagerContract
      */
     public function getDefaultDriver()
     {
-        return $this->getConfig('parsers.default');
+        return $this->getConfig('default');
     }
 
     /* -----------------------------------------------------------------
@@ -74,7 +74,7 @@ class ParserManager extends Manager implements ParserManagerContract
      */
     protected function buildParser($key)
     {
-        $config = $this->getConfig("parsers.supported.{$key}", []);
+        $config = $this->getConfig("parsers.{$key}", []);
 
         return new $config['class'](
             $config['options']

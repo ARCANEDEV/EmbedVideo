@@ -5,19 +5,33 @@ return [
      |  Parsers
      | -----------------------------------------------------------------
      */
+    'default' => 'youtube',
+
     'parsers' => [
-        'default' => 'youtube',
 
-        'supported' => [
-            'youtube' => [
-                'class'   => \Arcanedev\EmbedVideo\Parsers\YoutubeParser::class,
-                'options' => [],
-            ],
+        /* -----------------------------------------------------------------
+         |  Youtube
+         | -----------------------------------------------------------------
+         */
+        'youtube' => [
+            'class'   => \Arcanedev\EmbedVideo\Parsers\YoutubeParser::class,
 
-            'vimeo'   => [
-                'class'   => \Arcanedev\EmbedVideo\Parsers\VimeoParser::class,
-                'options' => [],
+            'options' => [
+                //
             ],
-        ]
+        ],
+
+        /* -----------------------------------------------------------------
+         |  Vimeo
+         | -----------------------------------------------------------------
+         */
+        'vimeo'   => [
+            'class'   => \Arcanedev\EmbedVideo\Parsers\VimeoParser::class,
+
+            'options' => [
+                //
+            ],
+        ],
+
     ],
 ];

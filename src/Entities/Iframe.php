@@ -114,7 +114,7 @@ class Iframe implements Htmlable
      *
      * @return string
      */
-    public function renderUrl()
+    protected function renderUrl()
     {
         return str_replace(
             array_keys($this->replacer),
@@ -128,7 +128,7 @@ class Iframe implements Htmlable
      *
      * @return string
      */
-    public function renderQueries()
+    protected function renderQueries()
     {
         return empty($this->queries) ? '' : '?'.http_build_query($this->queries);
     }
@@ -138,7 +138,7 @@ class Iframe implements Htmlable
      *
      * @return string
      */
-    public function renderAttributes()
+    protected function renderAttributes()
     {
         $output = [];
 

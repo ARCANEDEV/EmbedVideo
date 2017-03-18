@@ -32,9 +32,13 @@ return [
             'class'   => \Arcanedev\EmbedVideo\Parsers\VimeoParser::class,
 
             'options' => [
-                //
+                'patterns' => [
+                    '(https?://)?(?:www\.)?vimeo\.com/([0-9]+)',
+                    '(https?://)?(?:www\.)?vimeo\.com/m/([0-9]+)',
+                ],
             ],
         ],
+
 
     ],
 ];

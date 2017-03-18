@@ -17,9 +17,9 @@ class VimeoParser extends AbstractParser
      *
      * @return mixed
      */
-    protected function videoId()
+    public function videoId()
     {
-        // TODO: Implement videoId() method.
+        return $this->getCached(2);
     }
 
     /**
@@ -29,7 +29,7 @@ class VimeoParser extends AbstractParser
      */
     protected function defaultQueries()
     {
-        // TODO: Implement defaultQueries() method.
+        return [];
     }
 
     /**
@@ -39,7 +39,7 @@ class VimeoParser extends AbstractParser
      */
     protected function getIframePattern()
     {
-        // TODO: Implement getIframePattern() method.
+        return '{protocol}://player.vimeo.com/video/{id}';
     }
 
     /**
@@ -49,6 +49,19 @@ class VimeoParser extends AbstractParser
      */
     protected function getIframeReplacer()
     {
-        // TODO: Implement getIframeReplacer() method.
+        return [
+            '{protocol}' => $this->protocol,
+            '{id}'       => $this->videoId(),
+        ];
+    }
+
+    /**
+     * Get the info URL.
+     *
+     * @return string
+     */
+    public function getInfoUrl()
+    {
+        return $this->protocol.'://vimeo.com/'.$this->videoId();
     }
 }

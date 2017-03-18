@@ -17,7 +17,10 @@ return [
             'class'   => \Arcanedev\EmbedVideo\Parsers\YoutubeParser::class,
 
             'options' => [
-                //
+                'patterns' => [
+                    '^(https?://)?(?:www\.)?youtu\.be/([0-9a-zA-Z-_]{11})?(?:(?:\S+)?(?:\?|&)t=([0-9hm]+s))?(?:\S+)?',
+                    '^(https?://)?(?:www\.)?(?:youtu\.be/|youtube\.com/(?:embed/|v/|watch\?v=|watch\?.+&v=))((?:\w|-){11})(?:(?:\S+)?(?:\?|&)t=([0-9hm]+s))?(?:\S+)?$'
+                ],
             ],
         ],
 

@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\EmbedVideo\Entities;
 
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 
 /**
@@ -8,7 +9,7 @@ use Illuminate\Support\HtmlString;
  * @package  Arcanedev\EmbedVideo\Entities
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class Iframe
+class Iframe implements Htmlable
 {
     /* -----------------------------------------------------------------
      |  Properties
@@ -22,17 +23,17 @@ class Iframe
     /**
      * @var array
      */
-    private $queries;
+    protected $queries;
 
     /**
      * @var array
      */
-    private $replacer;
+    protected $replacer;
 
     /**
      * @var array
      */
-    private $attributes;
+    protected $attributes;
 
     /* -----------------------------------------------------------------
      |  Constructor
@@ -65,13 +66,7 @@ class Iframe
      */
     public function src()
     {
-        $url = str_replace(
-            array_keys($this->replacer),
-            array_values($this->replacer),
-            $this->pattern
-        );
-
-        return $url.'?'.http_build_query($this->queries);
+        return $this->renderUrl().$this->renderQueries();
     }
 
     /* -----------------------------------------------------------------
@@ -85,7 +80,19 @@ class Iframe
      */
     public function render()
     {
-        return new HtmlString('<iframe src="'.$this->src().'"></iframe>');
+        return new HtmlString(
+            '<iframe src="'.$this->src().'"'.$this->renderAttributes().'></iframe>'
+        );
+    }
+
+    /**
+     * Get content as a string of HTML.
+     *
+     * @return string
+     */
+    public function toHtml()
+    {
+        return $this->render()->toHtml();
     }
 
     /**
@@ -95,6 +102,50 @@ class Iframe
      */
     public function __toString()
     {
-        return $this->render()->toHtml();
+        return $this->toHtml();
+    }
+
+    /* -----------------------------------------------------------------
+     |  Other Methods
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Render the base URL.
+     *
+     * @return string
+     */
+    public function renderUrl()
+    {
+        return str_replace(
+            array_keys($this->replacer),
+            array_values($this->replacer),
+            $this->pattern
+        );
+    }
+
+    /**
+     * Render the URL queries.
+     *
+     * @return string
+     */
+    public function renderQueries()
+    {
+        return empty($this->queries) ? '' : '?'.http_build_query($this->queries);
+    }
+
+    /**
+     * Render the attributes.
+     *
+     * @return string
+     */
+    public function renderAttributes()
+    {
+        $output = [];
+
+        foreach ($this->attributes as $key => $value) {
+            $output[] = is_int($key) ? $value : $key.'="'.e($value).'"';
+        };
+
+        return empty($output) ? '' : ' '.implode(' ', $output);
     }
 }

@@ -1,39 +1,19 @@
 <?php namespace Arcanedev\EmbedVideo\Tests\Parsers;
 
-use Arcanedev\EmbedVideo\Tests\TestCase;
-
 /**
  * Class     YoutubeParserTest
  *
  * @package  Arcanedev\EmbedVideo\Tests\Parsers
  * @author   ARCANEDEV <arcanedev.maroc@gmail.com>
  */
-class YoutubeParserTest extends TestCase
+class YoutubeParserTest extends AbstractParserTest
 {
     /* -----------------------------------------------------------------
      |  Properties
      | -----------------------------------------------------------------
      */
-    /** @var  \Arcanedev\EmbedVideo\Parsers\YoutubeParser */
-    protected $parser;
-
-    /* -----------------------------------------------------------------
-     |  Main Methods
-     | -----------------------------------------------------------------
-     */
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->parser = $this->getParserManager()->parser('youtube');
-    }
-
-    public function tearDown()
-    {
-        unset($this->parser);
-
-        parent::tearDown();
-    }
+    /** @var  string */
+    protected $parserKey = 'youtube';
 
     /* -----------------------------------------------------------------
      |  Tests
@@ -53,7 +33,7 @@ class YoutubeParserTest extends TestCase
         }
 
         $this->assertNull($this->parser->url());
-        $this->assertSame([], $this->parser->attributes());
+        $this->assertEmpty($this->parser->attributes());
         $this->assertSame([
             'rel'   => 0,
             'wmode' => 'transparent',
@@ -61,7 +41,7 @@ class YoutubeParserTest extends TestCase
     }
 
     /** @test */
-    public function it_parse_url()
+    public function it_can_parse_url()
     {
         $id         = 'AvKvi406-M8';
         $url        = 'https://youtu.be/'.$id;
@@ -71,11 +51,21 @@ class YoutubeParserTest extends TestCase
             'wmode' => 'transparent',
         ];
 
-        $this->parser->parse($url)->setAttributes($attributes);
+        $result = $this->parser->setAttributes($attributes)->parse($url);
 
-        $this->assertSame($url, $this->parser->url());
+        $this->assertTrue($result);
+        $this->assertSame($id,         $this->parser->videoId());
+        $this->assertSame($url,        $this->parser->url());
         $this->assertSame($attributes, $this->parser->attributes());
-        $this->assertSame($queries, $this->parser->queries());
+        $this->assertSame($queries,    $this->parser->queries());
+    }
+
+    /** @test */
+    public function it_can_check_parsing()
+    {
+        $this->assertTrue($this->parser->parse('http://youtu.be/AvKvi406-M8'));
+
+        $this->assertFalse($this->parser->parse('http://example.org/video-id.mov'));
     }
 
     /**
@@ -140,17 +130,40 @@ class YoutubeParserTest extends TestCase
         ];
     }
 
-    /* -----------------------------------------------------------------
-     |  Other Methods
-     | -----------------------------------------------------------------
-     */
-    /**
-     * Get the parser manager.
-     *
-     * @return \Arcanedev\EmbedVideo\Contracts\ParserManager
-     */
-    protected function getParserManager()
+    /** @test */
+    public function it_can_set_and_get_attributes()
     {
-        return $this->app->make(\Arcanedev\EmbedVideo\Contracts\ParserManager::class);
+        $this->parser->setAttribute('height', 100)
+            ->parse('http://youtu.be/AvKvi406-M8');
+
+        $this->assertEquals(['height' => 100], $this->parser->attributes());
+    }
+
+    /** @test */
+    public function it_can_switch_http_protocol_to_secure_if_supported()
+    {
+        $this->parser->parse('http://youtu.be/AvKvi406-M8');
+
+        $this->assertEquals('https://youtu.be/AvKvi406-M8', $this->parser->getInfoUrl());
+    }
+
+    /** @test */
+    public function it_can_render_embed_html()
+    {
+        $this->parser->parse('http://youtu.be/AvKvi406-M8');
+
+        $this->parser->setAttributes([
+            'width' => 560,
+            'height' => 315,
+            'allowfullscreen',
+            'frameborder' => 0,
+        ]);
+
+        $iFrame = $this->parser->iframe();
+
+        $this->assertEquals(
+            '<iframe src="https://www.youtube.com/embed/AvKvi406-M8?rel=0&wmode=transparent" width="560" height="315" allowfullscreen frameborder="0"></iframe>',
+            $iFrame->toHtml()
+        );
     }
 }

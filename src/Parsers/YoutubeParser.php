@@ -13,16 +13,6 @@ class YoutubeParser extends AbstractParser
      | -----------------------------------------------------------------
      */
     /**
-     * The parser's URL patterns.
-     *
-     * @var array
-     */
-    protected $patterns = [
-        '^(https?://)?(?:www\.)?youtu\.be/([0-9a-zA-Z-_]{11})?(?:(?:\S+)?(?:\?|&)t=([0-9hm]+s))?(?:\S+)?',
-        '^(https?://)?(?:www\.)?(?:youtu\.be/|youtube\.com/(?:embed/|v/|watch\?v=|watch\?.+&v=))((?:\w|-){11})(?:(?:\S+)?(?:\?|&)t=([0-9hm]+s))?(?:\S+)?$'
-    ];
-
-    /**
      * Timestamp pattern and param.
      *
      * @var array
@@ -80,5 +70,15 @@ class YoutubeParser extends AbstractParser
             '{protocol}' => $this->protocol,
             '{id}'       => $this->videoId(),
         ];
+    }
+
+    /**
+     * Get the info URL.
+     *
+     * @return string
+     */
+    public function getInfoUrl()
+    {
+        return $this->protocol.'://youtu.be/'.$this->videoId();
     }
 }

@@ -27,6 +27,16 @@ interface Parser
     public function attributes();
 
     /**
+     * Set a attribute.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
+     */
+    public function setAttribute($key, $value);
+
+    /**
      * Set the attributes.
      *
      * @param  array  $attributes
@@ -34,6 +44,27 @@ interface Parser
      * @return self
      */
     public function setAttributes(array $attributes);
+
+    /**
+     * Get the URL queries.
+     *
+     * @return array
+     */
+    public function queries();
+
+    /**
+     * Get the video id.
+     *
+     * @return mixed
+     */
+    public function videoId();
+
+    /**
+     * Get the info URL.
+     *
+     * @return string
+     */
+    public function getInfoUrl();
 
     /* -----------------------------------------------------------------
      |  Main Methods
@@ -44,7 +75,14 @@ interface Parser
      *
      * @param  string  $url
      *
-     * @return self
+     * @return bool
      */
     public function parse($url);
+
+    /**
+     * Create an iframe entity.
+     *
+     * @return \Arcanedev\EmbedVideo\Entities\Iframe
+     */
+    public function iframe();
 }

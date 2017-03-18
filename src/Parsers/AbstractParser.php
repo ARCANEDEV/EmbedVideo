@@ -84,10 +84,9 @@ abstract class AbstractParser implements Parser
      */
     public function __construct(array $options)
     {
-        $this->queries = $this->defaultQueries();
-//        $this->setPatterns(Arr::get($options, 'patterns', []));
+        $this->queries  = $this->defaultQueries();
+        $this->patterns = Arr::get($options, 'patterns', []);
         $this->setAttributes(Arr::get($options, 'attributes', []));
-
     }
 
     /* -----------------------------------------------------------------
@@ -120,20 +119,6 @@ abstract class AbstractParser implements Parser
     }
 
     /**
-     * Set the URL patterns.
-     *
-     * @param  array  $patterns
-     *
-     * @return self
-     */
-    public function setPatterns(array $patterns)
-    {
-        $this->patterns = $patterns;
-
-        return $this;
-    }
-
-    /**
      * Get the attributes.
      *
      * @return array
@@ -141,6 +126,21 @@ abstract class AbstractParser implements Parser
     public function attributes()
     {
         return $this->attributes;
+    }
+
+    /**
+     * Set a attribute.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
+     */
+    public function setAttribute($key, $value)
+    {
+        Arr::set($this->attributes, $key, $value);
+
+        return $this;
     }
 
     /**
@@ -168,21 +168,6 @@ abstract class AbstractParser implements Parser
     }
 
     /**
-     * Create an iframe entity.
-     *
-     * @return \Arcanedev\EmbedVideo\Entities\Iframe
-     */
-    public function iframe()
-    {
-        return new Iframe(
-            $this->getIframePattern(),
-            $this->getIframeReplacer(),
-            $this->queries(),
-            $this->attributes()
-        );
-    }
-
-    /**
      * Get value from cached matches.
      *
      * @param  int         $key
@@ -196,11 +181,19 @@ abstract class AbstractParser implements Parser
     }
 
     /**
-     * Get the video id from cached matches.
+     * Set a query.
      *
-     * @return mixed
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
      */
-    abstract protected function videoId();
+    public function setQuery($key, $value = null)
+    {
+        Arr::set($this->queries, $key, $value);
+
+        return $this;
+    }
 
     /**
      * Get the default URL queries.
@@ -232,7 +225,7 @@ abstract class AbstractParser implements Parser
      *
      * @param  string  $url
      *
-     * @return self
+     * @return bool
      */
     public function parse($url)
     {
@@ -244,11 +237,27 @@ abstract class AbstractParser implements Parser
                 $this->parseProtocol();
                 $this->parseTimestamp();
                 $this->parseCustomParsing();
-                break;
+
+                return true;
             }
         }
 
-        return $this;
+        return false;
+    }
+
+    /**
+     * Create an iframe entity.
+     *
+     * @return \Arcanedev\EmbedVideo\Entities\Iframe
+     */
+    public function iframe()
+    {
+        return new Iframe(
+            $this->getIframePattern(),
+            $this->getIframeReplacer(),
+            $this->queries(),
+            $this->attributes()
+        );
     }
 
     /* -----------------------------------------------------------------

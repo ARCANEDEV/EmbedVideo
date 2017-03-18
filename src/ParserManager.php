@@ -26,13 +26,29 @@ class ParserManager extends Manager implements ParserManagerContract
     }
 
     /* -----------------------------------------------------------------
+     |  Constructor
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Create a new manager instance.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     */
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->registerParser();
+    }
+
+    /* -----------------------------------------------------------------
      |  Main Methods
      | -----------------------------------------------------------------
      */
     /**
      * Get a video parser implementation.
      *
-     * @param  string $parser
+     * @param  string  $parser
      *
      * @return \Arcanedev\EmbedVideo\Contracts\Parser
      */
@@ -41,46 +57,10 @@ class ParserManager extends Manager implements ParserManagerContract
         return $this->driver($parser);
     }
 
-    /**
-     * Create an instance of the specified parser.
-     *
-     * @return \Arcanedev\EmbedVideo\Contracts\Parser
-     */
-    protected function createYoutubeDriver()
-    {
-        return $this->buildParser('youtube');
-    }
-
-    /**
-     * Create an instance of the specified parser.
-     *
-     * @return \Arcanedev\EmbedVideo\Contracts\Parser
-     */
-    protected function createVimeoDriver()
-    {
-        return $this->buildParser('vimeo');
-    }
-
     /* -----------------------------------------------------------------
      |  Other Methods
      | -----------------------------------------------------------------
      */
-    /**
-     * Build the parser.
-     *
-     * @param  string  $key
-     *
-     * @return \Arcanedev\EmbedVideo\Contracts\Parser
-     */
-    protected function buildParser($key)
-    {
-        $config = $this->getConfig("parsers.{$key}", []);
-
-        return new $config['class'](
-            $config['options']
-        );
-    }
-
     /**
      * Get the config repository.
      *
@@ -102,5 +82,32 @@ class ParserManager extends Manager implements ParserManagerContract
     protected function getConfig($key, $default = null)
     {
         return $this->config()->get("embed-video.{$key}", $default);
+    }
+
+    /**
+     * Register the parsers.
+     */
+    private function registerParser()
+    {
+        foreach ($this->getConfig('parsers') as $driver => $configs) {
+            $this->extend($driver, function () use ($driver, $configs) {
+                return $this->buildParser($driver, $configs);
+            });
+        }
+    }
+
+    /**
+     * Build the parser.
+     *
+     * @param  string  $driver
+     * @param  array   $configs
+     *
+     * @return \Arcanedev\EmbedVideo\Contracts\Parser
+     */
+    private function buildParser($driver, array $configs)
+    {
+        return new $configs['class'](
+            $configs['options']
+        );
     }
 }

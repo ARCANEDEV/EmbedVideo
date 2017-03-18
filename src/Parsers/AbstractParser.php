@@ -168,6 +168,43 @@ abstract class AbstractParser implements Parser
     }
 
     /**
+     * Set a query parameter.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
+     */
+    public function setQuery($key, $value = null)
+    {
+        $this->queries = Arr::set($this->queries, $key, $value);
+
+        return $this;
+    }
+
+    /**
+     * Prepend a query parameter.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
+     */
+    protected function prependQuery($key, $value)
+    {
+        $this->queries = Arr::prepend($this->queries, $value, $key);
+
+        return $this;
+    }
+
+    /**
+     * Get the default URL queries.
+     *
+     * @return array
+     */
+    abstract protected function defaultQueries();
+
+    /**
      * Get value from cached matches.
      *
      * @param  int         $key
@@ -179,28 +216,6 @@ abstract class AbstractParser implements Parser
     {
         return Arr::get($this->cachedMatches, $key, $default);
     }
-
-    /**
-     * Set a query.
-     *
-     * @param  string  $key
-     * @param  mixed   $value
-     *
-     * @return self
-     */
-    public function setQuery($key, $value = null)
-    {
-        Arr::set($this->queries, $key, $value);
-
-        return $this;
-    }
-
-    /**
-     * Get the default URL queries.
-     *
-     * @return array
-     */
-    abstract protected function defaultQueries();
 
     /**
      * Get the iframe pattern.

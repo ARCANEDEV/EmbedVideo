@@ -39,6 +39,19 @@ return [
             ],
         ],
 
+        /* -----------------------------------------------------------------
+         |  Twitch
+         | -----------------------------------------------------------------
+         */
+        'twitch' => [
+            'class'   => \Arcanedev\EmbedVideo\Parsers\TwitchParser::class,
+
+            'options' => [
+                'patterns' => [
+                    '^(https?://)?(?:www\.)?twitch\.tv/videos/([0-9a-zA-Z-_]+)',
+                ],
+            ],
+        ],
 
     ],
 ];

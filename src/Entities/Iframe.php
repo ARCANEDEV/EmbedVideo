@@ -130,7 +130,23 @@ class Iframe implements Htmlable
      */
     protected function renderQueries()
     {
-        return empty($this->queries) ? '' : '?'.http_build_query($this->queries);
+        if (empty($this->queries)) return '';
+
+        $queries = [];
+
+        foreach ($this->queries as $key => $value) {
+            switch (gettype($value)) {
+                case 'boolean':
+                    $queries[$key] = $value ? 'true' : 'false';
+                    continue;
+
+                default:
+                    $queries[$key] = $value;
+                    continue;
+            }
+        }
+
+        return '?'.http_build_query($queries);
     }
 
     /**

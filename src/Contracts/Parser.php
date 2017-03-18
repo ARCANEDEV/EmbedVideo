@@ -53,6 +53,16 @@ interface Parser
     public function queries();
 
     /**
+     * Set a query parameter.
+     *
+     * @param  string  $key
+     * @param  mixed   $value
+     *
+     * @return self
+     */
+    public function setQuery($key, $value = null);
+
+    /**
      * Get the video id.
      *
      * @return mixed

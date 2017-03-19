@@ -20,6 +20,15 @@ interface Parser
     public function url();
 
     /**
+     * Set the URL.
+     *
+     * @param  string  $url
+     *
+     * @return self
+     */
+    public function setUrl($url);
+
+    /**
      * Get the attributes.
      *
      * @return array
@@ -83,11 +92,11 @@ interface Parser
     /**
      * Parse the given url.
      *
-     * @param  string  $url
+     * @param  string|null  $url
      *
      * @return bool
      */
-    public function parse($url);
+    public function parse($url = null);
 
     /**
      * Create an iframe entity.

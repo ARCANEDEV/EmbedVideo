@@ -110,7 +110,7 @@ abstract class AbstractParser implements Parser
      *
      * @return self
      */
-    protected function setUrl($url)
+    public function setUrl($url)
     {
         $this->url = $url;
         $this->reset();
@@ -242,9 +242,9 @@ abstract class AbstractParser implements Parser
      *
      * @return bool
      */
-    public function parse($url)
+    public function parse($url = null)
     {
-        $this->setUrl($url);
+        if ( ! is_null($url)) $this->setUrl($url);
 
         foreach ($this->patterns as $pattern) {
             if (preg_match('~'.$pattern.'~imu', $this->url, $matches)) {

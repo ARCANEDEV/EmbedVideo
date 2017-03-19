@@ -1,5 +1,6 @@
 <?php namespace Arcanedev\EmbedVideo;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Manager;
 use Arcanedev\EmbedVideo\Contracts\ParserManager as ParserManagerContract;
 
@@ -11,6 +12,17 @@ use Arcanedev\EmbedVideo\Contracts\ParserManager as ParserManagerContract;
  */
 class ParserManager extends Manager implements ParserManagerContract
 {
+    /* -----------------------------------------------------------------
+     |  Properties
+     | -----------------------------------------------------------------
+     */
+    /**
+     * Parser's patterns.
+     *
+     * @var array
+     */
+    protected $patterns = [];
+
     /* -----------------------------------------------------------------
      |  Getters & Setters
      | -----------------------------------------------------------------
@@ -38,7 +50,7 @@ class ParserManager extends Manager implements ParserManagerContract
     {
         parent::__construct($app);
 
-        $this->registerParser();
+        $this->registerParsers();
     }
 
     /* -----------------------------------------------------------------
@@ -55,6 +67,25 @@ class ParserManager extends Manager implements ParserManagerContract
     public function parser($parser = null)
     {
         return $this->driver($parser);
+    }
+
+    /**
+     * Guess the parser based on the given url.
+     *
+     * @param  string  $url
+     *
+     * @return \Arcanedev\EmbedVideo\Contracts\Parser|null
+     */
+    public function guess($url)
+    {
+        foreach ($this->patterns as $driver => $patterns) {
+            foreach ($patterns as $pattern) {
+                if (preg_match('~'.$pattern.'~imu', $url, $matches))
+                    return $this->parser($driver)->setUrl($url);
+            }
+        }
+
+        return null;
     }
 
     /* -----------------------------------------------------------------
@@ -87,27 +118,38 @@ class ParserManager extends Manager implements ParserManagerContract
     /**
      * Register the parsers.
      */
-    private function registerParser()
+    private function registerParsers()
     {
         foreach ($this->getConfig('parsers') as $driver => $configs) {
-            $this->extend($driver, function () use ($driver, $configs) {
-                return $this->buildParser($driver, $configs);
-            });
+            $this->registerParser($driver, $configs);
         }
     }
 
     /**
-     * Build the parser.
+     * Register the parser.
      *
      * @param  string  $driver
      * @param  array   $configs
-     *
-     * @return \Arcanedev\EmbedVideo\Contracts\Parser
      */
-    private function buildParser($driver, array $configs)
+    protected function registerParser($driver, array $configs)
     {
-        return new $configs['class'](
-            $configs['options']
-        );
+        $this->extend($driver, function () use ($driver, $configs) {
+            return new $configs['class'](
+                $configs['options']
+            );
+        });
+
+        $this->registerPatterns($driver, $configs);
+    }
+
+    /**
+     * Register patterns.
+     *
+     * @param  string  $driver
+     * @param  array   $configs
+     */
+    protected function registerPatterns($driver, array $configs)
+    {
+        $this->patterns[$driver] = Arr::get($configs, 'options.patterns', []);
     }
 }
